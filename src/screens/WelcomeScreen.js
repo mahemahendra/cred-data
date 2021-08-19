@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "react-native-button";
-import { Text, View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import { AppStyles } from "../AppStyles";
 import { AsyncStorage, ActivityIndicator } from "react-native";
 import auth from '@react-native-firebase/auth';

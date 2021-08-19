@@ -1,193 +1,106 @@
 import React from "react";
 import {
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  Dimensions,
+  Image,
 } from "react-native";
-import { SafeAreaView, View, FlatList, StatusBar, Button } from 'react-native';
-
+import { View } from 'react-native';
+import { FlatGrid } from 'react-native-super-grid';
 import FastImage from "react-native-fast-image";
-import firestore, { firebase } from '@react-native-firebase/firestore'
+import firestore, { firebase } from '@react-native-firebase/firestore';
 import { connect } from "react-redux";
+import LogoIcon from '../../assets/logo.png';
 import {
-  AppIcon,
   AppStyles,
 } from "../AppStyles";
-import { Configuration } from "../Configuration";
+import {MenuItems} from "../components/data/MenuItems";
 
+const { width, height } = Dimensions.get("window");
 class HomeScreen extends React.Component {
-  // static navigationOptions = ({ navigation }) => ({
-  //   title: <Text>Cred Data</Text>,
-  //   headerLeft: () => {
-  //     return (
-  //       <TouchableOpacity
-  //         onPress={() => {
-  //           navigation.openDrawer();
-  //         }}
-  //       >
-  //         {navigation.state.params && navigation.state.params.menuIcon ? (
-  //           <FastImage
-  //             style={styles.userPhoto}
-  //             resizeMode={FastImage.resizeMode.cover}
-  //             source={{ uri: navigation.state.params.menuIcon }}
-  //           />
-  //         ) : (
-  //           <FastImage
-  //             style={styles.userPhoto}
-  //             resizeMode={FastImage.resizeMode.cover}
-  //             source={AppIcon.images.defaultUser}
-  //           />
-  //         )}
-  //       </TouchableOpacity>
-  //     );
-  //   }
-  // });
-
+  static navigationOptions = {
+    header: null
+  };
   constructor(props) {
     super(props);
     this.state = {
-      activeSlide: 0,
-      userList: [],
-      reload: false,
       currentUser: firebase.app().auth().currentUser,
       userInfo: '',
     };
+    this.data = MenuItems;
   }
 
   componentDidMount() {
     firestore().collection('users').doc(this.state.currentUser.uid).get().then(user => {
-      if(user.data().userRole === 'ADMIN') {
-        this._getUserList();
-      }
       this.setState({
         userInfo: user.data(),
       });
     });
-    // if(this.state.currentUser.userRole === 'ADMIN') {
-    //   this._getUserList();
-    // }
     this.props.navigation.setParams({
-      menuIcon: this.state.currentUser.profileURL
-    });
-  }
-
-  _getUserList() {
-    firestore()
-    .collection("users")
-    .where('userRole', '==', 'USER')
-    .get().then(res => {
-      this.setState({
-        userList: res.docs.map(e => ({...e.data(), id: e.id})),
-      });
-    });
-  }
-
-  updateStatus(item, newStatus) {
-    firestore()
-    .collection('users')
-    .doc(item.id)
-    .update({
-      status: newStatus,
-    }).then(r => {
-      this._getUserList();
+      menuIcon: this.state.currentUser.profileURL,
+      userInfo: this.state.currentUser,
     });
   }
 
 
-  renderItem = ({item}) => (
-    <View style={styles.item}>
-      <View>
-        <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.flatListSubCaption}>Email: {item.email}</Text>
-        <Text style={styles.flatListSubCaption}>Status: {item.status === '' ? 'PENDING' : item.status}</Text>
-      </View>
-      <View style={styles.actionView}>
-        {item.status !== 'APPROVE' && <Button
-          onPress={this.updateStatus.bind(this, item, "APPROVE")}
-          title={'APPROVE'}
-        ></Button>}
-        {item.status !== 'BLOCK' && <Button
-          onPress={this.updateStatus.bind(this, item, "BLOCK")}
-          style={styles.actionBtn}
-          title={'BLOCK'}
-        ></Button>}
-      </View>
-    </View>
-  );
+  renderDashboardMenu(item) {
+    if(item.role === "ADMIN" && this.state.userInfo.userRole !== "ADMIN") {
+      return;
+    } else {
+      return <TouchableOpacity>
+          <View key={item.name} style={styles.menuItem} onTouchEndCapture={() => this.props.navigation.navigate(item.component) }>
+              {/* <Image source={item.icon} style={styles.menuIcon} /> */}
+              <Text style={styles.menuLabel}>{item.name}</Text>
+          </View>
+      </TouchableOpacity>
+    }
+  }
 
   render() {
     let renderItems = null;
-    if(this.state.userInfo.userRole === 'ADMIN') {
-      renderItems = <FlatList
-        data={this.state.userList}
-        renderItem={this.renderItem}
-        keyExtractor={item => item.id}
-      />;
-    } else {
-      if(this.state.userInfo.status === '' || this.state.userInfo.status === 'PENDING') {
-        renderItems = <Text>Welcome, your account has not yet Approved. Please contact Admin</Text>
-      } else if(this.state.userInfo.status === 'APPROVE') {
-        renderItems = <Text>Welcome, your account has been Approved. Congratulations</Text>
-      } else if(this.state.userInfo.status === 'BLOCK') {
-        renderItems = <Text>Welcome, your account has been Blocked. Please contact Admin</Text>
-      }
+    if(this.state.userInfo.status === '' || this.state.userInfo.status === 'PENDING') {
+      renderItems = <Text>Welcome, your account has not yet Approved. Please contact Admin</Text>
+    } else if(this.state.userInfo.status === 'APPROVE' || this.state.userInfo.userRole === 'ADMIN') {
+      renderItems = <View justifyContent="center" flexDirection="column" style={{height: height - 180}}>
+          <View>
+            <Image
+              resizeMode={FastImage.resizeMode.cover}
+              source={LogoIcon}
+              style={{width: width - 100, height: 150,}}
+            />
+          </View>
+          <View justifyContent="center" flexDirection="row">
+            <View>
+              <FlatGrid
+                  spacing={10}
+                  itemDimension={130}
+                  data={this.data}
+                  renderItem={({item}) => this.renderDashboardMenu(item)}
+              />
+            </View>
+          </View>
+        </View>
+    } else if(this.state.userInfo.status === 'BLOCK') {
+      renderItems = <Text>Welcome, your account has been Blocked. Please contact Admin</Text>
     }
-
-    return (
-      <ScrollView style={styles.container}>
-        {/* {this.state.userList.map(e => {
-          return <Text>asd</Text>
-        })} */}
-        {/* <Button title={'Reload'} onPress={() => this.setState({reload: !this.state.reload})} /> */}
-        {renderItems}
-        {/* <Text style={styles.title}>Welcome {this.state.userInfo.email}</Text> */}
-      </ScrollView>
-    );
+    return renderItems;
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    flex: 1,
-    padding: Configuration.home.listing_item.offset
-  },
-  title: {
-    fontWeight: "bold",
-    color: AppStyles.color.title,
-    fontSize: 25
-  },
-  userPhoto: {
-    width: 30,
-    height: 40,
-    // borderRadius: 20,
-    marginLeft: 5
-  },
-  item: {
+  menuItem: {
+    alignContent: 'center',
+    alignItems: 'center',
+    height: 100,
     backgroundColor: AppStyles.color.main,
-    padding: 10,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    display: "flex",
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+    borderRadius: 5,
+    justifyContent: 'center',
   },
-  title: {
-    fontSize: 20,
-    color: AppStyles.color.white,
-  },
-  flatListSubCaption: {
-    color: AppStyles.color.white,
-  },
-  actionView: {
-    display: "flex",
-    flexDirection: 'column',
-    justifyContent: 'center'
-  },
-  actionBtn: {
-    margin: 5,
-  },
+  menuLabel: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  }
 });
 
 const mapStateToProps = state => ({

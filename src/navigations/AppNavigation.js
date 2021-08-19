@@ -12,6 +12,11 @@ import HomeScreen from "../screens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
+import CreateBarcode from "../screens/barcode/CreateBarcode.react";
+import MyReports from "../screens/reports/MyReports.react";
+import Reports from "../screens/reports/Reports.react";
+import Users from "../screens/users/Users.react";
+import Profile from "../screens/users/Profile.react";
 import { AppIcon, AppStyles } from "../AppStyles";
 import { Configuration } from "../Configuration";
 import DrawerContainer from "../components/DrawerContainer";
@@ -48,15 +53,20 @@ const LoginStack = createStackNavigator(
 
 const HomeStack = createStackNavigator(
   {
-    Home: { screen: HomeScreen }
+    Home: { screen: HomeScreen },
+    CreateBarcode: { screen: CreateBarcode },
+    MyReports: { screen: MyReports },
+    Reports: { screen: Reports },
+    Users: { screen: Users },
+    Profile: { screen: Profile},
   },
   {
     initialRouteName: "Home",
     headerMode: "float",
 
-    headerLayoutPreset: "center",
     navigationOptions: ({ navigation }) => ({
       headerTintColor: "red",
+      headerTitleAlign: "center",
       headerTitleStyle: styles.headerTitleStyle
     }),
     cardStyle: { backgroundColor: "#FFFFFF" }

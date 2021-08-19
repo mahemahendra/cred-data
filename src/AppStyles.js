@@ -2,7 +2,7 @@ import { Platform, StyleSheet, Dimensions } from "react-native";
 import { Configuration } from "./Configuration";
 
 const { width, height } = Dimensions.get("window");
-const SCREEN_WIDTH = width < height ? width : height;
+export const SCREEN_WIDTH = width < height ? width : height;
 const numColumns = 2;
 
 export const AppStyles = {
@@ -23,7 +23,8 @@ export const AppStyles = {
     greenBlue: "#00aea8",
     placeholder: "#a0a0a0",
     background: "#f2f2f2",
-    blue: "#3293fe"
+    blue: "#3293fe",
+    bgColor: '#FFFFFF',
   },
   fontSize: {
     title: 30,
@@ -43,6 +44,9 @@ export const AppStyles = {
 };
 
 export const AppIcon = {
+  mainContainer: {
+    flex: 1,
+  },
   container: {
     backgroundColor: "white",
     borderRadius: 20,
