@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         color: AppStyles.color.white,
     },
     mainDate: {
-        fontSize: 12,
+        fontSize: 20,
         color: AppStyles.color.white,
         position: 'absolute',
         right: 10,

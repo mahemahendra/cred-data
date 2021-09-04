@@ -105,3 +105,17 @@ export const ListStyle = StyleSheet.create({
     width: 80
   }
 });
+
+export const AppCommonStyle = StyleSheet.create({
+  pageHeading: {
+    fontSize: 25,
+    backgroundColor: AppStyles.color.main,
+    color: AppStyles.color.white,
+    width: '100%',
+    display: 'flex',
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+});

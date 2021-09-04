@@ -12,10 +12,10 @@ import HomeScreen from "../screens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
-import CreateBarcode from "../screens/barcode/CreateBarcode.react";
+import Barcode from "../screens/barcode/Barcode.react";
 import MyReports from "../screens/reports/MyReports.react";
 import Reports from "../screens/reports/Reports.react";
-import Users from "../screens/users/Users.react";
+import UserWrapper from "../screens/users/UserWrapper.react";
 import Profile from "../screens/users/Profile.react";
 import { AppIcon, AppStyles } from "../AppStyles";
 import { Configuration } from "../Configuration";
@@ -54,10 +54,10 @@ const LoginStack = createStackNavigator(
 const HomeStack = createStackNavigator(
   {
     Home: { screen: HomeScreen },
-    CreateBarcode: { screen: CreateBarcode },
+    CreateBarcode: { screen: Barcode },
     MyReports: { screen: MyReports },
     Reports: { screen: Reports },
-    Users: { screen: Users },
+    Users: { screen: UserWrapper },
     Profile: { screen: Profile},
   },
   {
@@ -75,7 +75,12 @@ const HomeStack = createStackNavigator(
 
 const TabNavigator = createBottomTabNavigator(
   {
-    Home: { screen: HomeStack }
+    Home: { screen: HomeScreen },
+    'Create Barcode': { screen: Barcode },
+    Profile: { screen: Profile},
+    Users: { screen: UserWrapper },
+    MyReports: { screen: MyReports },
+    Reports: { screen: Reports},
   },
   {
     navigationOptions: ({ navigation }) => ({
@@ -85,42 +90,43 @@ const TabNavigator = createBottomTabNavigator(
         if (routeName === "Home") {
           iconName = AppIcon.images.home;
         }
-
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
         return (
           <Image
             style={{
-              tintColor: focused ? AppStyles.color.tint : AppStyles.color.grey
+              tintColor: focused ? AppStyles.color.tint : AppStyles.color.grey,
             }}
             source={iconName}
           />
         );
-      }
+      },
     }),
+    backBehavior: 'history',
     initialLayout: {
       height: 300
     },
     tabBarOptions: {
       activeTintColor: AppStyles.color.tint,
       inactiveTintColor: "gray",
+      showIcon: true,
       style: {
         height: Configuration.home.tab_bar_height
-      }
+      },
     }
-  }
+  },
 );
 
 // drawer stack
 const DrawerStack = createDrawerNavigator(
   {
-    Tab: TabNavigator
+    Tab: TabNavigator,
   },
   {
     drawerPosition: "left",
     initialRouteName: "Tab",
     drawerWidth: 200,
-    contentComponent: DrawerContainer
+    contentComponent: DrawerContainer,
   }
 );
 
@@ -128,13 +134,14 @@ const DrawerStack = createDrawerNavigator(
 const RootNavigator = createStackNavigator(
   {
     LoginStack: { screen: LoginStack },
-    DrawerStack: { screen: DrawerStack }
+    DrawerStack: { screen: TabNavigator },
   },
   {
     // Default config for all screens
     headerMode: "none",
-    initialRouteName: "DrawerStack",
+    initialRouteName: "TabNavigator",
     transitionConfig: noTransitionConfig,
+    detachPreviousScreen: true,
     navigationOptions: ({ navigation }) => ({
       color: "black"
     })

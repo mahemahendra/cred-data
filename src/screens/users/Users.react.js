@@ -1,19 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, SafeAreaView, FlatList, View, Text, Button, StyleSheet, } from 'react-native';
+import { ActivityIndicator, SafeAreaView, FlatList, View, Text, Button, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import { AppStyles } from '../../AppStyles';
 import firestore from '@react-native-firebase/firestore';
-import { Configuration } from "../../Configuration";
+import { styles as loginStyle } from '../../styles/Login.styles';
 
 const Users = (props) => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
-
+    const [search, setSearch] = useState('');
+    
     const getUserList = () => {
         firestore()
         .collection("users")
-        .where('userRole', '==', 'USER')
+        // .where('userRole', '==', 'USER')
         .get().then(res => {
-            setData(res.docs.map(e => ({...e.data(), id: e.id})));
+            const data = res.docs.map(e => ({...e.data(), id: e.id}))
+            let temp = [];
+            data.forEach(d => {
+                console.log(d.userId);
+                if(d.userId !== undefined && d.userId.indexOf(search) > -1) {
+                    temp.push(d);
+                }
+            })
+            setData(temp);
+            setLoading(false);
+        })
+        .catch(e => {
+            console.error("[getUserList]", error.message);
             setLoading(false);
         });
     }
@@ -22,34 +35,38 @@ const Users = (props) => {
         getUserList();
     }, []);
 
-    const updateStatus = (item, newStatus) => {
+    // useEffect(() => {
+    //     getUserList();
+    // }, [props.showList]);
+
+    const editUser = (item) => {
+        props.setSelectedUser(item);
+    }
+
+    const deleteUser = (item) => {
+        setLoading(true);
         firestore()
-        .collection('users')
-        .doc(item.id)
-        .update({
-            status: newStatus,
-        }).then(r => {
+        .collection("users")
+        .doc(item.id).delete()
+        .then(res => {
             getUserList();
+            setLoading(false);
+        })
+        .catch(e => {
+            console.error("[User delete error]", error.message);
+            setLoading(false);
         });
     }
 
     const renderItem = (item) => (
         <View style={styles.item}>
             <View>
-                <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.flatListSubCaption}>Email: {item.email}</Text>
-                <Text style={styles.flatListSubCaption}>Status: {item.status === '' ? 'PENDING' : item.status}</Text>
+                <Text style={styles.title}>{item.firstName}</Text>
+                <Text style={styles.flatListSubCaption}>UserId: {item.userId}</Text>
             </View>
             <View style={styles.actionView}>
-                {item.status !== 'APPROVE' && <Button
-                    onPress={() => updateStatus(item, "APPROVE")}
-                    title={'APPROVE'}
-                ></Button>}
-                {item.status !== 'BLOCK' && <Button
-                    onPress={() => updateStatus(item, "BLOCK")}
-                    style={styles.actionBtn}
-                    title={'BLOCK'}
-                ></Button>}
+                <TouchableOpacity><Text style={{color: AppStyles.color.white}} onPress={() => editUser(item)}>View</Text></TouchableOpacity>
+                <TouchableOpacity><Text style={{color: AppStyles.color.white}} onPress={() => deleteUser(item)}>Delete</Text></TouchableOpacity>
             </View>
         </View>
     );
@@ -61,11 +78,32 @@ const Users = (props) => {
         />
     :
         <SafeAreaView style={AppStyles.mainContainer}>
-            <FlatList
-                data={data}
-                renderItem={({item}) => renderItem(item)}
-                keyExtractor={item => item.id}
-            />
+            <View style={{justifyContent: 'space-between', flexDirection: 'column', alignContent: 'stretch', height: '100%'}}>
+                <Text style={{color: AppStyles.color.main, textAlign: 'center', margin: 10, fontSize: 18}}>List of Users</Text>
+                <View style={{flexDirection: 'row', alignContent: 'center', width: '100%', justifyContent: 'space-between', paddingHorizontal: 15}}>
+                    <TextInput
+                        style={styles.body}
+                        placeholder="Search by User Id"
+                        onChangeText={text => setSearch(text)}
+                        value={search}
+                        placeholderTextColor={AppStyles.color.grey}
+                        underlineColorAndroid="transparent"
+                    />
+                    <Button
+                        color={AppStyles.color.main}
+                        title={'Search'}
+                        onPress={getUserList}
+                    />
+                </View>
+                <FlatList
+                    data={data}
+                    renderItem={({item}) => renderItem(item)}
+                    keyExtractor={item => item.id}
+                />
+                <View>
+                    <Button title={'Create User'} color={AppStyles.color.main} onPress={() => props.setSelectedUser({})} />
+                </View>
+            </View>
         </SafeAreaView>
 }
 
@@ -96,9 +134,12 @@ const styles = StyleSheet.create({
     actionView: {
       display: "flex",
       flexDirection: 'column',
-      justifyContent: 'center'
+      justifyContent: 'space-between'
     },
     actionBtn: {
       margin: 5,
+    },
+    body: {
+        ...loginStyle.body,
     },
 });

@@ -1,7 +1,7 @@
 export const MenuItems = [
     {
         name: 'Create Barcode',
-        component: 'CreateBarcode',
+        component: 'Create Barcode',
     },
     {
         name: 'My Reports',

@@ -25,20 +25,14 @@ class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: firebase.app().auth().currentUser,
-      userInfo: '',
+      currentUser: this.props.user,
+      userInfo: this.props.user,
     };
     this.data = MenuItems;
   }
 
   componentDidMount() {
-    firestore().collection('users').doc(this.state.currentUser.uid).get().then(user => {
-      this.setState({
-        userInfo: user.data(),
-      });
-    });
     this.props.navigation.setParams({
-      menuIcon: this.state.currentUser.profileURL,
       userInfo: this.state.currentUser,
     });
   }
@@ -59,9 +53,7 @@ class HomeScreen extends React.Component {
 
   render() {
     let renderItems = null;
-    if(this.state.userInfo.status === '' || this.state.userInfo.status === 'PENDING') {
-      renderItems = <Text>Welcome, your account has not yet Approved. Please contact Admin</Text>
-    } else if(this.state.userInfo.status === 'APPROVE' || this.state.userInfo.userRole === 'ADMIN') {
+    if(true) {
       renderItems = <View justifyContent="center" flexDirection="column" style={{height: height - 180}}>
           <View>
             <Image
