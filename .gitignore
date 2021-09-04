@@ -7,3 +7,4 @@ android/build
 android/app/build
 android/app/release
 android/java_pid15944.hprof
+package-lock.json
