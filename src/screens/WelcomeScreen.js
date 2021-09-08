@@ -2,8 +2,8 @@ import React from "react";
 import Button from "react-native-button";
 import { View, TextInput,Image, Platform } from "react-native";
 import { AppStyles } from "../AppStyles";
-import { AsyncStorage, ActivityIndicator } from "react-native";
-// import AsyncStorage from '@react-native-community/async-storage';
+import { ActivityIndicator } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 import DeviceInfo from 'react-native-device-info';
 import firestore from '@react-native-firebase/firestore';
 import Logo from '../../assets/logo.png';
@@ -11,7 +11,7 @@ import { styles } from '../styles/Login.styles';
 
 class WelcomeScreen extends React.Component {
   static navigationOptions = {
-    header: null
+    headerShown: false
   };
 
   constructor(props) {
@@ -53,7 +53,6 @@ class WelcomeScreen extends React.Component {
           } else {
             alert("User already logged in another device");
           }
-          
         } else {
           alert("User does not exist. Please try again.");
         }
@@ -148,6 +147,7 @@ class WelcomeScreen extends React.Component {
               AsyncStorage.setItem("@loggedInUserID:key", userInfo.userId);
               AsyncStorage.setItem("@loggedInUserID:password", userInfo.password);
               AsyncStorage.setItem("@loggedInUserID:deviceId", userInfo.deviceId);
+              AsyncStorage.setItem("@loggedInUserID:userRole", userInfo.userRole);
               navigation.dispatch({ type: "Login", user: userInfo });
             } else {
               alert("User already logged in another device");

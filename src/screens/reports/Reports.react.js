@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { connect } from "react-redux";
+import Text from '../../components/nativeComponents/Text.react';
 import {
         SafeAreaView,
         Text as RNText,
@@ -9,7 +10,6 @@ import {
         ActivityIndicator,
         FlatList,
     } from "react-native";
-// import Text from '../../components/nativeComponents/Text.react';
 import { AppStyles, AppCommonStyle} from "../../AppStyles";
 import firestore from '@react-native-firebase/firestore';
 
@@ -17,29 +17,17 @@ const Reports = (props) => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
 
-    async function getUserId(id) {
-        return await (await firestore().collection('users').doc(id).get()).data();
-    }
-
     useEffect(() => {
         firestore().collection('barCodes').get().then(result => {
             const data = result.docs.map(d => d.data());
             let temp = [];
             const groups = data.reduce((acc, date) => {
-            // create a composed key: 'year-week' 
-            // const yearWeek = `${moment(date.timeStamp).year()}-${moment(date.timeStamp).week()}`;
-            const yearWeek = `${moment(date.timeStamp).toDate().toLocaleDateString()}-${date.userId !== undefined ? date.userId : date.id}`;
-            
-            // add this key as a property to the result object
-            if (!acc[yearWeek]) {
-                acc[yearWeek] = [];
-            }
-            
-            // push the current date that belongs to the year-week calculated befor
-            acc[yearWeek].push(date);
-            
-            return acc;
-            
+                const yearWeek = date.userId;
+                if (!acc[yearWeek]) {
+                    acc[yearWeek] = [];
+                }
+                acc[yearWeek].push(date.userId);
+                return acc;
             }, {});
             
             Object.keys(groups).forEach(g => {
@@ -54,13 +42,11 @@ const Reports = (props) => {
     }, [data]);
 
     const renderReports = (item) => {
-        return <View key={item.date} style={{...styles.reportList, flexDirection: 'row', justifyContent: 'space-between'}}>
-            
-            <RNText cls='mainDate' style={{width: '30%', color: AppStyles.color.white}}>{item.date.split("-")[1]}</RNText>
-            <RNText cls='mainDate' style={{width: '30%', color: AppStyles.color.white}}>{item.date.split("-")[0]}</RNText>
-            <RNText cls='mainTitle' style={{width: '30%', color: AppStyles.color.white, textAlign: 'right'}}>
+        return <View style={{...styles.reportList, backgroundColor: AppStyles.color.white, flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text cls='dataCell' style={{color: AppStyles.color.white}}>{item.date.split("-")[0]}</Text>
+            <Text cls='dataCell' style={{color: AppStyles.color.white}}>
                 {item.count}
-            </RNText>
+            </Text>
         </View>
     }
 
@@ -79,16 +65,16 @@ const Reports = (props) => {
         </View>
         <View style={styles.flatListContainer}>
             <View style={{...styles.reportList, flexDirection: 'row', justifyContent: 'space-between'}}>
-                
                 <RNText cls='mainDate' style={{width: '30%', color: AppStyles.color.white}}>User Id</RNText>
-                <RNText cls='mainDate' style={{width: '30%', color: AppStyles.color.white}}>Date</RNText>
                 <RNText cls='mainTitle' style={{width: '30%', color: AppStyles.color.white, textAlign: 'right'}}>
-                    Count
+                    Total Barcodes
                 </RNText>
+                {/* <RNText cls='mainDate' style={{width: '30%', color: AppStyles.color.white}}>Date</RNText> */}
             </View>
             <FlatList
                 spacing={10}
                 data={data}
+                keyExtractor={(item) => item.date}
                 renderItem={({item}) => renderReports(item)}
             />
         </View>

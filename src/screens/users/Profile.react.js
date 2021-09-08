@@ -13,7 +13,6 @@ const Profile = (props) => {
         firestore().collection('users').doc(props.user.id).get().then(docs => {
             setUserInfo(docs.data());
             setLoading(false);
-            console.info(docs.data());
         });
     }, []);
 
@@ -39,12 +38,12 @@ const Profile = (props) => {
                     <View style={styles.userRow}>
                         <Text style={styles.userInfoRow}>Full Name <Text style={styles.userInfoRowValue}>{userInfo.firstName}</Text></Text>
                     </View>
-                    <View style={styles.userRow}>
+                    {/* <View style={styles.userRow}>
                         <Text style={styles.userInfoRow}>Mobile <Text style={styles.userInfoRowValue}>{userInfo.mobile}</Text></Text>
                     </View>
                     <View style={styles.userRow}>
                         <Text style={styles.userInfoRow}>Address <Text style={styles.userInfoRowValue}>{userInfo.address}</Text></Text>
-                    </View>
+                    </View> */}
                 </View>
             </View>
         </View>

@@ -5,6 +5,8 @@ export const generateBarCodeText = () => {
     const second4ext = _generateBarCodeFormat(4);
     const second5Number = _generateBarCodeFormat(5, 'NUM');
     return first3Number+first3Text+second4Number+second4ext+second5Number;
+    // return first3Number;
+
 }
 
 const _generateBarCodeFormat = (len = 19, type = 'text') => {

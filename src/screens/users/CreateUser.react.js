@@ -222,7 +222,7 @@ const CreateUser = (props) => {
                         <Button
                             containerStyle={{...styles.loginContainer, width: '40%', marginRight: 10}}
                             style={styles.loginText}
-                            onPress={submit}
+                            onPress={() => submit()}
                         >
                             Submit
                         </Button>

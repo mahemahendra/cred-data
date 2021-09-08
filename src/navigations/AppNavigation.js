@@ -1,16 +1,13 @@
 import React from "react";
-import { Animated, Easing, Image, StyleSheet } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import {createBottomTabNavigator} from 'react-navigation-tabs';
+import {createBottomTabNavigator, /* BottomTabBar */} from 'react-navigation-tabs';
 import {createStackNavigator} from 'react-navigation-stack'
-import {createDrawerNavigator} from 'react-navigation-drawer'
 import {
   createReactNavigationReduxMiddleware,
   createReduxContainer
 } from "react-navigation-redux-helpers";
 import HomeScreen from "../screens/HomeScreen";
-import LoginScreen from "../screens/LoginScreen";
-import SignupScreen from "../screens/SignupScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import Barcode from "../screens/barcode/Barcode.react";
 import MyReports from "../screens/reports/MyReports.react";
@@ -19,25 +16,17 @@ import UserWrapper from "../screens/users/UserWrapper.react";
 import Profile from "../screens/users/Profile.react";
 import { AppIcon, AppStyles } from "../AppStyles";
 import { Configuration } from "../Configuration";
-import DrawerContainer from "../components/DrawerContainer";
-
-const noTransitionConfig = () => ({
-  transitionSpec: {
-    duration: 0,
-    timing: Animated.timing,
-    easing: Easing.step0
-  }
-});
 
 const middleware = createReactNavigationReduxMiddleware(
   state => state.nav
 );
 
+// const TabBarComponent = (props) => (props.show ? <BottomTabBar {...props} /> : <BottomTabBar tabStyle={{display: "none"}} {...props} />);
+// const TabBarComponent = (props) => (<BottomTabBar {...props} />);
+
 // login stack
 const LoginStack = createStackNavigator(
   {
-    Login: { screen: LoginScreen },
-    Signup: { screen: SignupScreen },
     Welcome: { screen: WelcomeScreen }
   },
   {
@@ -45,89 +34,83 @@ const LoginStack = createStackNavigator(
     headerMode: "float",
     navigationOptions: ({ navigation }) => ({
       headerTintColor: "red",
-      headerTitleStyle: styles.headerTitleStyle
+      headerTitleStyle: styles.headerTitleStyle,
+      cardStyle: { backgroundColor: "#FFFFFF" }
     }),
-    cardStyle: { backgroundColor: "#FFFFFF" }
   }
 );
 
 const HomeStack = createStackNavigator(
   {
-    Home: { screen: HomeScreen },
-    CreateBarcode: { screen: Barcode },
-    MyReports: { screen: MyReports },
-    Reports: { screen: Reports },
-    Users: { screen: UserWrapper },
-    Profile: { screen: Profile},
-  },
-  {
-    initialRouteName: "Home",
-    headerMode: "float",
-
-    navigationOptions: ({ navigation }) => ({
-      headerTintColor: "red",
-      headerTitleAlign: "center",
-      headerTitleStyle: styles.headerTitleStyle
-    }),
-    cardStyle: { backgroundColor: "#FFFFFF" }
-  }
-);
-
-const TabNavigator = createBottomTabNavigator(
-  {
-    Home: { screen: HomeScreen },
-    'Create Barcode': { screen: Barcode },
-    Profile: { screen: Profile},
-    Users: { screen: UserWrapper },
+    UserWrapper: { screen: UserWrapper, navigationOptions: {tabBarLabel: 'Users'} },
     MyReports: { screen: MyReports },
     Reports: { screen: Reports},
   },
   {
+    headerMode: "none",
     navigationOptions: ({ navigation }) => ({
+      headerTintColor: "red",
+      headerTitleStyle: styles.headerTitleStyle,
+      cardStyle: { backgroundColor: "#FFFFFF" }
+    }),
+  }
+);
+const BlackHole = () => [];
+const TabNavigator = createBottomTabNavigator(
+  {
+    Home: { screen: HomeScreen },
+    Barcode: { screen: Barcode },
+    Profile: { screen: Profile },
+    UserWrapper: { screen: UserWrapper, navigationOptions: {tabBarLabel: 'Users', tabBarButtonComponent: () => false} },
+    MyReports: { screen: MyReports, navigationOptions: {
+      tabBarButtonComponent: () => false
+    }},
+    Reports: { screen: Reports, navigationOptions: {
+      tabBarButtonComponent: () => false
+    }},
+  },
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
         if (routeName === "Home") {
           iconName = AppIcon.images.home;
+        } else if(routeName === "Profile") {
+          iconName = AppIcon.images.user;
+        } else if(routeName === "Barcode") {
+          iconName = AppIcon.images.barcode;
         }
-        // You can return any component that you like here! We usually use an
-        // icon component from react-native-vector-icons
         return (
           <Image
             style={{
               tintColor: focused ? AppStyles.color.tint : AppStyles.color.grey,
+              height: 25,
+              width: 25,
             }}
             source={iconName}
           />
         );
       },
     }),
-    backBehavior: 'history',
     initialLayout: {
-      height: 300
+      height: 300,
     },
+    // tabBarComponent: (props) => {
+    //   // const showMenu = ["Home", "Barcode", "Profile"];
+    //   // const index = props.navigation.state.index;
+    //   // const menuItem = props.navigation.state.routes[index].key;
+    //   return <TabBarComponent {...props} />
+    // },
     tabBarOptions: {
       activeTintColor: AppStyles.color.tint,
       inactiveTintColor: "gray",
       showIcon: true,
       style: {
-        height: Configuration.home.tab_bar_height
+        height: Configuration.home.tab_bar_height,
       },
     }
   },
-);
-
-// drawer stack
-const DrawerStack = createDrawerNavigator(
-  {
-    Tab: TabNavigator,
-  },
-  {
-    drawerPosition: "left",
-    initialRouteName: "Tab",
-    drawerWidth: 200,
-    contentComponent: DrawerContainer,
-  }
 );
 
 // Manifest of possible screens
@@ -140,10 +123,9 @@ const RootNavigator = createStackNavigator(
     // Default config for all screens
     headerMode: "none",
     initialRouteName: "TabNavigator",
-    transitionConfig: noTransitionConfig,
     detachPreviousScreen: true,
     navigationOptions: ({ navigation }) => ({
-      color: "black"
+      color: "black",
     })
   }
 );

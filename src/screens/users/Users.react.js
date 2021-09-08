@@ -17,7 +17,6 @@ const Users = (props) => {
             const data = res.docs.map(e => ({...e.data(), id: e.id}))
             let temp = [];
             data.forEach(d => {
-                console.log(d.userId);
                 if(d.userId !== undefined && d.userId.indexOf(search) > -1) {
                     temp.push(d);
                 }
@@ -41,6 +40,7 @@ const Users = (props) => {
 
     const editUser = (item) => {
         props.setSelectedUser(item);
+        props.setShowList(false)
     }
 
     const deleteUser = (item) => {
@@ -56,6 +56,11 @@ const Users = (props) => {
             console.error("[User delete error]", error.message);
             setLoading(false);
         });
+    }
+
+    const createUser = () => {
+        props.setSelectedUser({});
+        props.setShowList(false);
     }
 
     const renderItem = (item) => (
@@ -101,7 +106,7 @@ const Users = (props) => {
                     keyExtractor={item => item.id}
                 />
                 <View>
-                    <Button title={'Create User'} color={AppStyles.color.main} onPress={() => props.setSelectedUser({})} />
+                    <Button title={'Create User'} color={AppStyles.color.main} onPress={createUser} />
                 </View>
             </View>
         </SafeAreaView>

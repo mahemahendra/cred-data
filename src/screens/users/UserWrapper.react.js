@@ -6,10 +6,6 @@ const UserWrapper = (props) => {
     const [showList, setShowList] = useState(true);
     const [selectedUser, setSelectedUser] = useState({});
 
-    useEffect(() => {
-        setShowList(false);
-    }, [selectedUser]);
-
     const render = showList ?
     <Users setSelectedUser={setSelectedUser} setShowList={setShowList} /> :
     <CreateUser selectedUser={selectedUser} setShowList={setShowList} />;

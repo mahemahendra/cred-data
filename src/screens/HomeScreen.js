@@ -9,9 +9,9 @@ import {
 import { View } from 'react-native';
 import { FlatGrid } from 'react-native-super-grid';
 import FastImage from "react-native-fast-image";
-import firestore, { firebase } from '@react-native-firebase/firestore';
 import { connect } from "react-redux";
 import LogoIcon from '../../assets/logo.png';
+import Appbanner from '../../assets/appbanner.png';
 import {
   AppStyles,
 } from "../AppStyles";
@@ -20,7 +20,7 @@ import {MenuItems} from "../components/data/MenuItems";
 const { width, height } = Dimensions.get("window");
 class HomeScreen extends React.Component {
   static navigationOptions = {
-    header: null
+    headerShown: false
   };
   constructor(props) {
     super(props);
@@ -37,14 +37,13 @@ class HomeScreen extends React.Component {
     });
   }
 
-
   renderDashboardMenu(item) {
     if(item.role === "ADMIN" && this.state.userInfo.userRole !== "ADMIN") {
       return;
     } else {
       return <TouchableOpacity>
           <View key={item.name} style={styles.menuItem} onTouchEndCapture={() => this.props.navigation.navigate(item.component) }>
-              {/* <Image source={item.icon} style={styles.menuIcon} /> */}
+              <Image resizeMode='contain' source={item.icon} style={styles.menuIcon} />
               <Text style={styles.menuLabel}>{item.name}</Text>
           </View>
       </TouchableOpacity>
@@ -54,15 +53,27 @@ class HomeScreen extends React.Component {
   render() {
     let renderItems = null;
     if(true) {
-      renderItems = <View justifyContent="center" flexDirection="column" style={{height: height - 180}}>
-          <View>
+      renderItems = <View justifyContent="center" flexDirection="column" style={{flex: 1, backgroundColor: AppStyles.color.white}}>
+          <View style={{width: '100%', alignSelf: 'stretch', position: 'absolute', top: 0}}>
+            <Image
+              resizeMode={FastImage.resizeMode.stretch}
+              source={Appbanner}
+              style={{width: '100%', height: 160, position: 'relative', bottom: 4}}
+              resizeMethod='scale'
+            />
+          </View>
+          <View style={{width: '100%', marginTop: 150}}>
             <Image
               resizeMode={FastImage.resizeMode.cover}
               source={LogoIcon}
-              style={{width: width - 100, height: 150,}}
+              resizeMethod='scale'
+              style={{justifyContent: 'center', alignSelf: 'center',width: width - 100, height: 150,}}
             />
           </View>
-          <View justifyContent="center" flexDirection="row">
+          <View justifyContent="center" flexDirection="column">
+            <View style={{paddingHorizontal: 10}}>
+              <Text style={{fontSize: 20}}>Hi {this.props.user.firstName},</Text>
+            </View>
             <View>
               <FlatGrid
                   spacing={10}
@@ -73,8 +84,6 @@ class HomeScreen extends React.Component {
             </View>
           </View>
         </View>
-    } else if(this.state.userInfo.status === 'BLOCK') {
-      renderItems = <Text>Welcome, your account has been Blocked. Please contact Admin</Text>
     }
     return renderItems;
   }
@@ -84,14 +93,16 @@ const styles = StyleSheet.create({
   menuItem: {
     alignContent: 'center',
     alignItems: 'center',
-    height: 100,
-    backgroundColor: AppStyles.color.main,
     borderRadius: 5,
     justifyContent: 'center',
   },
   menuLabel: {
-    color: '#FFFFFF',
+    color: '#000',
     fontSize: 16,
+  },
+  menuIcon: {
+    width: 50,
+    height: 60,
   }
 });
 

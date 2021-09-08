@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
     mainDate: {
         fontSize: 20,
         color: AppStyles.color.white,
-        position: 'absolute',
-        right: 10,
+    },
+    dataCell: {
+        color: AppStyles.color.main
     },
 });

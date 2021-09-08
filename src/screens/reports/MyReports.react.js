@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { connect } from "react-redux";
-import { DataTable, Header, Title, Row, Cell } from 'react-native-paper';
+// import { DataTable, Header, Title, Row, Cell } from 'react-native-paper';
 import {
         SafeAreaView,
         StyleSheet,
@@ -20,13 +20,12 @@ const MyReports = (props) => {
 
     useEffect(() => {
         firestore().collection('barCodes').where("id", "==", props.user.id).get().then(result => {
-            const data = result.docs.map(d => ({...d.data(), id: d.id}));
+            const data = result.docs.map(d => ({...d.data()})).reverse();
             let temp = [];
             const groups = data.reduce((acc, date) => {
             // create a composed key: 'year-week' 
             // const yearWeek = `${moment(date.timeStamp).year()}-${moment(date.timeStamp).week()}`;
-            const yearWeek = moment(date.timeStamp).toDate().toLocaleDateString();
-            
+            const yearWeek = moment(date.timeStamp.toDate()).format('DD/MM/YYYY');
             // add this key as a property to the result object
             if (!acc[yearWeek]) {
                 acc[yearWeek] = [];
@@ -51,29 +50,12 @@ const MyReports = (props) => {
     }, [data]);
 
     const renderReports = (item) => {
-        return <View key={item.date} style={styles.reportList}>
-            <Text cls='mainTitle'>
+        return <View style={{...styles.reportList, backgroundColor: AppStyles.color.white, borderWidth: 0}}>
+            <Text cls='dataCell'>{item.date}</Text>
+            <Text cls='dataCell'>
                 {item.count}
             </Text>
-            <Text cls='mainDate'>{item.date}</Text>
         </View>
-    }
-
-    const populateGrid = () => {
-        return <DataTable>
-            <Header>
-                <Title>Date</Title>
-                <Title numeric>Number of Code</Title>
-            </Header>
-            {
-                data.map((d, index) => {
-                    <Row key={index}>
-                        <Cell>{d.date}</Cell>
-                        <Cell numeric>{d.count}</Cell>
-                    </Row>
-                })
-            }
-        </DataTable>
     }
 
     return loading ? <ActivityIndicator
@@ -91,17 +73,18 @@ const MyReports = (props) => {
         </View>
         <View style={styles.flatListContainer}>
             <View style={styles.reportList}>
-                <Text cls='mainTitle'>
-                    Count
-                </Text>
                 <Text cls='mainDate'>Date</Text>
+                <Text cls='mainTitle'>
+                    Total Barcode
+                </Text>
             </View>
-            {/* <FlatList
+            <FlatList
                 spacing={10}
                 data={data}
+                keyExtractor={(item) => item.date}
                 renderItem={({item}) => renderReports(item)}
-            /> */}
-            { populateGrid() }
+            />
+            {/* { populateGrid() } */}
         </View>
     </SafeAreaView>;
 }
@@ -123,10 +106,9 @@ const styles = StyleSheet.create({
         backgroundColor: AppStyles.color.main,
         width: '98%',
         alignSelf: 'center',
-        // margin: 5,
         padding: 5,
-        borderBottomColor: AppStyles.color.white,
-        borderWidth: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     flatListText: {
         color: AppStyles.color.white,

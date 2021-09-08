@@ -2,7 +2,7 @@ import { NavigationActions } from "react-navigation";
 import { combineReducers } from "redux";
 import { RootNavigator } from "../navigations/AppNavigation";
 import auther from '@react-native-firebase/auth';
-import { AsyncStorage } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 
 // Start with two routes: The Main screen, with the Login screen on top.
 const firstAction = RootNavigator.router.getActionForPathAndParams(
@@ -56,6 +56,7 @@ function auth(state = initialAuthState, action) {
       AsyncStorage.removeItem("@loggedInUserID:id");
       AsyncStorage.removeItem("@loggedInUserID:key");
       AsyncStorage.removeItem("@loggedInUserID:password");
+      AsyncStorage.removeItem("@loggedInUserID:deviceId");
       return { ...state, isLoggedIn: false, user: {} };
     default:
       return state;

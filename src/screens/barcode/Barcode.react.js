@@ -5,7 +5,9 @@ import {
     TextInput,
     ScrollView,
     ActivityIndicator,
+    Alert,
   } from "react-native";
+import moment from 'moment';
 import Button from "react-native-button";
 import { connect } from "react-redux";
 import { AppStyles, AppCommonStyle } from "../../AppStyles";
@@ -19,19 +21,59 @@ const Barcode = (props) => {
     const [barCodeText, setBarCodeText] = useState(generateBarCodeText());
     const [barCodeValue, setBarCodeValue] = useState('');
     const [barCodeError, setBarCodeError] = useState('');
+    const [todayCount, setTodayCount] = useState(0);
     const [genBarcode, setGenBarcode] = useState(false);
+
+    const setShowBox = () => {
+        setLoading(false);
+        getTodayBarcodeSubmitionCount();
+        resetBarcodeCreation();
+    }
+    const showConfirmDialog = () => {
+        return Alert.alert(
+            "Barcode",
+            "Barcode created successfully",
+            [
+                {
+                text: "Yes",
+                onPress: () => {
+                        setShowBox();
+                    },
+                },
+            ]
+        );
+    };
+
+    const getTodayBarcodeSubmitionCount = () => {
+        firestore().collection('barCodes')
+        .where('id', '==', props.user.id)
+        .get()
+        .then(user => {
+            let count = 0;
+            const todayDate = moment(new Date()).format('DD/MM/YYYY');
+            console.log(todayDate);
+            user.forEach(u => {
+                const dt = moment(u.data().timeStamp.toDate()).format('DD/MM/YYYY');
+                if(todayDate === dt) {
+                    count++;
+                }
+            });
+            setTodayCount(count);
+        });
+    }
 
     const saveData = () => {
         setLoading(true);
         firestore().collection('barCodes').add({
             id: props.user.id,
             barCode: barCodeText,
+            userId: props.user.userId,
+            userName: props.user.firstName,
             timeStamp: new Date(),
         }).then(_ => {
             setTimeout(() => {
-                setLoading(false);
-                props.navigation.navigate('Home');
-            }, (parseInt(props.user.timer) * 1000))
+                showConfirmDialog();
+            }, (parseInt(props.user.timer) * 1000));
             resetBarcodeCreation();
         });
     }
@@ -58,15 +100,15 @@ const Barcode = (props) => {
         }
     }, [barCodeValue]);
 
-    // useEffect(() => {
-    //     resetBarcodeCreation();
-    // }, []);
+    useEffect(() => {
+        getTodayBarcodeSubmitionCount();
+    }, []);
     const render = <View>
         <View>
             <Text style={AppCommonStyle.pageHeading}>Create Barcode</Text>
         </View>
         <View style={styles.card} removeClippedSubviews={true}>
-            <Text style={styles.barCodeLabel}>Total barcode submitted Today: {0}</Text>
+            <Text style={styles.barCodeLabel}>Total barcode submitted Today: {todayCount}</Text>
             <View><Text style={styles.barCodeField}>{barCodeText}</Text></View>
             <TextInput
                 contextMenuHidden={true}

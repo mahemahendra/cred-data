@@ -5,6 +5,7 @@ import { createStore, applyMiddleware } from "redux";
 // import SplashScreen from 'react-native-splash-screen';
 // import { StatusBar } from 'react-native';
 import AppReducer from "./src/reducers";
+import { StackNavigator } from 'react-navigation';
 // import { appColors } from './src/components/Theme';
 import { AppNavigator, middleware } from "./src/navigations/AppNavigation";
 
