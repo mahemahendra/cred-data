@@ -133,7 +133,7 @@ const Barcode = (props) => {
     </View>;
 
     return loading ? <ActivityIndicator
-            style={styles.spinner}
+            style={{flex: 1}}
             size="large"
             color={AppStyles.color.tint}
         />

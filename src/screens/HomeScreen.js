@@ -53,21 +53,20 @@ class HomeScreen extends React.Component {
   render() {
     let renderItems = null;
     if(true) {
-      renderItems = <View justifyContent="center" flexDirection="column" style={{flex: 1, backgroundColor: AppStyles.color.white}}>
-          <View style={{width: '100%', alignSelf: 'stretch', position: 'absolute', top: 0}}>
+      renderItems = <View flexDirection="column" style={{flex: 1, width: '100%' ,backgroundColor: AppStyles.color.white, justifyContent: 'flex-start'}}>
+          <View style={{width: '100%', alignSelf: 'stretch'}}>
             <Image
               resizeMode={FastImage.resizeMode.stretch}
               source={Appbanner}
-              style={{width: '100%', height: 160, position: 'relative', bottom: 4}}
+              style={{width: '100%', height: 150, position: 'relative', bottom: 4}}
               resizeMethod='scale'
             />
           </View>
-          <View style={{width: '100%', marginTop: 150}}>
+          <View style={{width: '100%', height: 150}}>
             <Image
-              resizeMode={FastImage.resizeMode.cover}
+              resizeMode={FastImage.resizeMode.contain}
               source={LogoIcon}
-              resizeMethod='scale'
-              style={{justifyContent: 'center', alignSelf: 'center',width: width - 100, height: 150,}}
+              style={{justifyContent: 'center', alignSelf: 'center', height: 150,}}
             />
           </View>
           <View justifyContent="center" flexDirection="column">
@@ -101,8 +100,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   menuIcon: {
-    width: 50,
-    height: 60,
+    width: 40,
+    height: 50,
   }
 });
 

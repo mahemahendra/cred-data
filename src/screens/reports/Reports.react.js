@@ -51,7 +51,7 @@ const Reports = (props) => {
     }
 
     return loading ? <ActivityIndicator
-        style={{}}
+        style={{flex: 1}}
         size="large"
         color={AppStyles.color.tint}
     />

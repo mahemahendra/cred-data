@@ -17,7 +17,7 @@ const Profile = (props) => {
     }, []);
 
     return loading ? <ActivityIndicator
-        style={{}}
+        style={{flex: 1}}
         size="large"
         color={AppStyles.color.tint}
     />
@@ -38,12 +38,6 @@ const Profile = (props) => {
                     <View style={styles.userRow}>
                         <Text style={styles.userInfoRow}>Full Name <Text style={styles.userInfoRowValue}>{userInfo.firstName}</Text></Text>
                     </View>
-                    {/* <View style={styles.userRow}>
-                        <Text style={styles.userInfoRow}>Mobile <Text style={styles.userInfoRowValue}>{userInfo.mobile}</Text></Text>
-                    </View>
-                    <View style={styles.userRow}>
-                        <Text style={styles.userInfoRow}>Address <Text style={styles.userInfoRowValue}>{userInfo.address}</Text></Text>
-                    </View> */}
                 </View>
             </View>
         </View>

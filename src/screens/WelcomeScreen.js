@@ -76,7 +76,7 @@ class WelcomeScreen extends React.Component {
     if (this.state.isLoading == true) {
       return (
         <ActivityIndicator
-          style={styles.spinner}
+          style={{flex: 1}}
           size="large"
           color={AppStyles.color.tint}
         />

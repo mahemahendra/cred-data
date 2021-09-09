@@ -27,9 +27,9 @@ export const MenuItems = [
         component: 'Reports',
         icon: AllReports,
     },
-    {
-        name: 'Profile',
-        component: 'Profile',
-        icon: Profile,
-    },
+    // {
+    //     name: 'Profile',
+    //     component: 'Profile',
+    //     icon: Profile,
+    // },
 ];

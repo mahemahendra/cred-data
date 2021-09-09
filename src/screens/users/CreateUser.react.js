@@ -5,13 +5,13 @@ import { AppStyles } from '../../AppStyles';
 import { styles } from '../../styles/Login.styles';
 import RadioButton from '../../components/nativeComponents/RadioButton';
 import firestore from '@react-native-firebase/firestore';
+import Toast from 'react-native-toast-message';
 
 const CreateUser = (props) => {
     const [loading, setLoading] = useState(false);
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
-    const [mobile, setMobile] = useState('');
     const [userRole, setUserRole] = useState('USER');
     const [userIdError, setUserIdError] = useState('');
     const [passwordError, setPasswordError] = useState('');
@@ -70,13 +70,16 @@ const CreateUser = (props) => {
                     userId: userId,
                     password: password,
                     firstName: firstName,
-                    mobile: mobile,
                     userRole: userRole,
                     timer: timer,
                 }).then(res => {
                     setTimeout(() => {
                         props.setShowList(true);
                         setLoading(false);
+                        Toast.show({
+                            text1: 'User created successfully.',
+                            position: 'bottom'
+                        });
                     }, 2000)
                 }).catch(() => {
                     setLoading(false);
@@ -89,13 +92,16 @@ const CreateUser = (props) => {
                     userId: userId,
                     password: password,
                     firstName: firstName,
-                    mobile: mobile,
                     userRole: userRole,
                     timer: timer,
                 }).then(res => {
                     setTimeout(() => {
                         props.setShowList(true);
                         setLoading(false);
+                        Toast.show({
+                            text1: 'User updated successfully.',
+                            position: 'bottom',
+                        });
                     }, 2000)
                 }).catch(() => {
                     setLoading(false);
@@ -110,7 +116,6 @@ const CreateUser = (props) => {
         setUserId('');
         setPassword('');
         setFirstName('');
-        setMobile('');
         setUserRole('');
         setUserIdError('');
         setPasswordError('');
@@ -123,7 +128,6 @@ const CreateUser = (props) => {
         setUserId(user.userId);
         setPassword(user.password);
         setFirstName(user.firstName);
-        setMobile(user.mobile);
         setUserRole(user.userRole);
         setTimer(user.timer)
     }
@@ -141,7 +145,7 @@ const CreateUser = (props) => {
         }
     }, [props.selectedUser]);
     return loading ? <ActivityIndicator
-            style={{}}
+            style={{flex: 1}}
             size="large"
             color={AppStyles.color.tint}
         />: 
@@ -152,6 +156,16 @@ const CreateUser = (props) => {
                     <Text style={{fontSize: 20, textAlign: 'center', backgroundColor: AppStyles.color.main, color: AppStyles.color.white, padding: 5}}>Create New User</Text>
                 </View>
                 <View style={styles.container}>
+                    <View style={styles.InputContainer}>
+                        <TextInput
+                            style={styles.body}
+                            placeholder="User Name"
+                            onChangeText={text => setFirstName(text)}
+                            value={firstName}
+                            placeholderTextColor={AppStyles.color.grey}
+                            underlineColorAndroid="transparent"
+                        />
+                    </View>
                     <View style={styles.InputContainer}>
                         <TextInput
                             style={styles.body}
@@ -192,32 +206,9 @@ const CreateUser = (props) => {
                             underlineColorAndroid="transparent"
                         />
                     </View>
-                    <View style={styles.InputContainer}>
-                        <TextInput
-                            style={styles.body}
-                            placeholder="First Name"
-                            onChangeText={text => setFirstName(text)}
-                            value={firstName}
-                            placeholderTextColor={AppStyles.color.grey}
-                            underlineColorAndroid="transparent"
-                        />
-                    </View>
                     <View>
                         <Text style={styles.error}>{firstNameError}</Text>
                     </View>
-                    <View style={styles.InputContainer}>
-                        <TextInput
-                            style={styles.body}
-                            placeholder="Mobile"
-                            onChangeText={text => setMobile(text)}
-                            value={mobile}
-                            placeholderTextColor={AppStyles.color.grey}
-                            underlineColorAndroid="transparent"
-                        />
-                    </View>
-                    {/* <View>
-                        <Text style={styles.error}>{mobileError}</Text>
-                    </View> */}
                     <View style={{flexDirection: 'row'}}>
                         <Button
                             containerStyle={{...styles.loginContainer, width: '40%', marginRight: 10}}

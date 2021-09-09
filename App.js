@@ -7,6 +7,7 @@ import { createStore, applyMiddleware } from "redux";
 import AppReducer from "./src/reducers";
 import { StackNavigator } from 'react-navigation';
 // import { appColors } from './src/components/Theme';
+import Toast from 'react-native-toast-message';
 import { AppNavigator, middleware } from "./src/navigations/AppNavigation";
 
 const store = createStore(AppReducer, applyMiddleware(middleware));
@@ -16,6 +17,7 @@ class StarterApp extends React.Component {
     return (
       <Provider store={store}>
         <AppNavigator />
+        <Toast ref={(ref) => Toast.setRef(ref)} />
       </Provider>
     );
   }
